@@ -4,4 +4,68 @@
 
 Welcome to your new app.
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+<br />
+<br />
+
+<RepeatComponent @ref="repeater"
+                 Items="customers">
+    <Header>
+        <h2>Customers</h2>
+    </Header>
+    <Row Context="customer">
+        <div>
+            <b>@customer.CompanyName</b>
+            &nbsp;
+            <button class="btn" @onclick="@(()=>
+                                                          {
+                                                              EditCustomer(customer);
+                                                          })">Edit</button>
+        </div>
+        <div class="ml-5">@customer.ContactName</div>
+        <div class="ml-5">@customer.PhoneNumber</div>
+        <br />
+    </Row>
+    <EditTemplate Context="currentCustomer">
+        <div>
+            <text>Company Name:</text><input class="form-control" @bind-value="currentCustomer.CompanyName" @bind-value:event="oninput"/>
+        </div>
+        <div>
+            <text>Contact Name:</text><input class="form-control" @bind-value="currentCustomer.ContactName" @bind-value:event="oninput"/>
+        </div>
+        <div>
+            <text>Phone Number:</text><input class="form-control" @bind-value="currentCustomer.PhoneNumber" @bind-value:event="oninput"/>
+        </div>
+    </EditTemplate>
+</RepeatComponent>
+
+@code
+{
+    private RepeatComponent<Customer> repeater;
+
+    private List<Customer> customers;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        customers = new List<Customer>();
+        customers.AddRange(new Customer[]
+        {
+            new Customer { CompanyName="ABC Company", ContactName="Lisa su", PhoneNumber="111-1234" },
+            new Customer { CompanyName="KIM Company", ContactName="John Lee", PhoneNumber="222-1234" },
+            new Customer { CompanyName="KOR Company", ContactName="Watson", PhoneNumber="333-1234" }
+        });
+    }
+
+    private void EditCustomer(Customer customer)
+    {
+        repeater.ItemToEdit = customer;
+    }
+
+    class Customer
+    {
+        public string CompanyName { get; set; }
+        public string ContactName { get; set; }
+        public string PhoneNumber { get; set; }
+    }
+}
